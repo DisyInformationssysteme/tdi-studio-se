@@ -51,6 +51,7 @@ import org.talend.sdk.component.studio.model.parameter.LayoutParameter;
 import org.talend.sdk.component.studio.model.parameter.Metadatas;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.PropertyTreeCreator;
+import org.talend.sdk.component.studio.model.parameter.TextElementParameter;
 import org.talend.sdk.component.studio.model.parameter.VersionParameter;
 import org.talend.sdk.component.studio.ui.composite.TaCoKitWizardComposite;
 import org.talend.sdk.component.studio.ui.composite.problemmanager.WizardProblemManager;
@@ -193,8 +194,18 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
     private boolean supportContextBtn(ConfigTypeNode configTypeNode) {
         boolean supportContext = EComponentCategory.BASIC == category
                 && "datastore".equalsIgnoreCase(configTypeNode.getConfigurationType());
-        if (supportContext && TacokitDatabaseConnection.KEY_JDBC_DATASTORE_NAME.equals(configTypeNode.getName())) {
+        if (supportContext && containsTextParameter()) {
             return true;
+        }
+        return false;
+    }
+
+    private boolean containsTextParameter() {
+        List<? extends IElementParameter> listParam = element.getElementParameters();
+        for (IElementParameter param : listParam) {
+            if (param.isShow(listParam) && param instanceof TextElementParameter) {
+                return true;
+            }
         }
         return false;
     }
