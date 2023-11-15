@@ -115,6 +115,7 @@ import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.service.IDesignerMapperService;
 import org.talend.core.service.IEBCDICProviderService;
 import org.talend.core.service.IMetadataManagmentService;
+import org.talend.core.service.ITCKUIService;
 import org.talend.core.service.ITaCoKitDependencyService;
 import org.talend.core.ui.ICDCProviderService;
 import org.talend.core.ui.IJobletProviderService;
@@ -2535,11 +2536,27 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
     
     public static boolean isIgnoreJDBCRepositoryParameter(final Node node, String repositoryValue) {
-        if (node.getComponent().getName() != null && node.getComponent().getName().contains("JDBC")
+        if ("JDBC".equals(ITCKUIService.get().getComponentFamilyName(node.getComponent()))
                 && ((TacokitDatabaseConnection.KEY_USE_AUTO_COMMIT.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASTORE_USE_AUTO_COMMIT.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SP_DATASTORE_USE_AUTO_COMMIT.equals(repositoryValue)
                         || TacokitDatabaseConnection.KEY_AUTO_COMMIT.equals(repositoryValue)
-                        || TacokitDatabaseConnection.KEY_DATASET_TABLE_NAME.equals(repositoryValue)
-                        || TacokitDatabaseConnection.KEY_DATASET_SQL_QUERY.equals(repositoryValue)))) {
+                        || TacokitDatabaseConnection.KEY_DATASTORE_AUTO_COMMIT.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SP_DATASTORE_AUTO_COMMIT.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_USE_DATASOURCE.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASTORE_USE_DATASOURCE.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SP_DATASTORE_USE_DATASOURCE.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASOURCE_ALIAS.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASTORE_DATASOURCE_ALIAS.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SP_DATASTORE_DATASOURCE_ALIAS.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_USE_SHARED_DB_CONNECTION.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASTORE_USE_SHARED_DB_CONNECTION.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SP_DATASTORE_USE_SHARED_DB_CONNECTION.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SHARED_DB_CONNECTION.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASTORE_SHARED_DB_CONNECTION.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SP_DATASTORE_SHARED_DB_CONNECTION.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASET_SQL_QUERY.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASET_TABLE_NAME.equals(repositoryValue)))) {
             return true;
         }
         return false;

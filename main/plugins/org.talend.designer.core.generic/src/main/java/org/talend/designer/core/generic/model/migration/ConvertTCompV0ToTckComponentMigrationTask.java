@@ -33,8 +33,10 @@ import org.talend.core.model.components.ModifyComponentsAction;
 import org.talend.core.model.components.conversions.IComponentConversion;
 import org.talend.core.model.components.filters.IComponentFilter;
 import org.talend.core.model.components.filters.NameComponentFilter;
+import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.daikon.NamedThing;
@@ -42,15 +44,19 @@ import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.daikon.serialize.PostDeserializeSetup;
+import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.ParameterUtilTool;
 import org.talend.designer.core.model.utils.emf.talendfile.ConnectionType;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.MetadataType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.utils.security.StudioEncryption;
 
 public abstract class ConvertTCompV0ToTckComponentMigrationTask extends AbstractJobMigrationTask {
@@ -62,6 +68,32 @@ public abstract class ConvertTCompV0ToTckComponentMigrationTask extends Abstract
         String oldPath;
         String newPath;
         String fieldType;
+    }
+    
+    private boolean isDynamicSetting(Property property) {
+        if(property == null) {
+            return false;
+        }
+        Object obj = property.getTaggedValue(IGenericConstants.IS_DYNAMIC);
+        if(obj != null) {
+            if(obj instanceof Boolean) {
+                return Boolean.class.cast(obj);
+            } else {
+                return Boolean.parseBoolean(String.valueOf(obj));
+            }
+        }
+        return false;
+    }
+    
+    private Object typeConvert(String type, Object storedValue) {
+        if("java.lang.Boolean".equals(type)) {
+            if("true".equals(storedValue)) {
+                return Boolean.TRUE;
+            } else {
+                return Boolean.FALSE;
+            }
+        }
+        return storedValue;
     }
     
     @Override
@@ -86,9 +118,6 @@ public abstract class ConvertTCompV0ToTckComponentMigrationTask extends Abstract
                 nodeType.setComponentName(newComponentName);
                 nodeType.setComponentVersion("1");
                 
-                //get the new tck component define model
-                //final IComponent component = ComponentsFactoryProvider.getInstance().get(newComponentName, category.getName());
-                
                 ElementParameterType tcompV0PropertiesElement = ParameterUtilTool.findParameterType(nodeType, "PROPERTIES");
                 final String jsonProperties = tcompV0PropertiesElement.getValue();
                 final ComponentProperties compProperties = Properties.Helper.fromSerializedPersistent(jsonProperties, ComponentProperties.class, new PostDeserializeSetup() {
@@ -99,19 +128,52 @@ public abstract class ConvertTCompV0ToTckComponentMigrationTask extends Abstract
 
                             @Override
                             public Object evaluate(Property property, Object storedValue) {
+                                if(property == null) {
+                                    return storedValue;
+                                }
+                                
                                 if (storedValue instanceof String) {
+                                    final String strValue = (String)storedValue;
+                                    final String type = property.getType();
+                                    
+                                    boolean isDynamicSetting = isDynamicSetting(property);
+                                    if(isDynamicSetting) {
+                                        if (ContextParameterUtils.isContainContextParam(strValue)) {
+                                            storedValue = getRealParamValueFromContext(processType, strValue);
+                                        }
+                                        
+                                        //we need to computer it here, if not, exception will appear for can't cast string.class to boolean.class
+                                        storedValue = typeConvert(type, storedValue);
+                                    } else {
+                                        //two cases when isDynamicSetting is false:
+                                        //1: basic case: user never use dynamic setting for current property
+                                        //2: hell case: user used dynamic setting for current property, but remove the dynamic setting later, that will store value in item, for this case, no need to computer the context value
+                                        if("java.lang.String".equals(type)) {
+                                            //even case 2, no need to computer it here
+                                        } else if("java.lang.Boolean".equals(type)) {
+                                            //if context mode for boolean type, is sure case 2 above
+                                            if (ContextParameterUtils.isContainContextParam(strValue)) {
+                                                storedValue = getRealParamValueFromContext(processType, strValue);
+                                            }
+                                            
+                                            //we need to computer it here, if not, exception will appear for can't cast string.class to boolean.class
+                                            storedValue = typeConvert(type, storedValue);
+                                        }
+                                    }
+                                    
                                     //see EnumProperty, it have a bug, for example : "org.talend.components.jdbc.tjdbcoutput.TJDBCOutputProperties$DataAction", whose "$" is stored by ".", then class not found issue
                                     //so have to fix here
+                                    
                                     if (GenericTypeUtils.isEnumType(property)) {
-                                        ComponentProperties newProperties = ComponentsUtils.getComponentProperties(oldComponentName);
+                                        String componentName = correctComponentName(oldComponentName);
+                                        ComponentProperties newProperties = ComponentsUtils.getComponentProperties(componentName);
 
                                         Property newProperty = (Property) newProperties.getProperty(property.getName());
                                         if (newProperty == null) {
                                             newProperty = (Property) newProperties.getProperty("dataAction");
                                         }
                                         if (newProperty != null) {
-                                            List<?> propertyPossibleValues = ((Property<?>) newProperty)
-                                                    .getPossibleValues();
+                                            List<?> propertyPossibleValues = ((Property<?>) newProperty).getPossibleValues();
                                             if (propertyPossibleValues != null) {
                                                 for (Object possibleValue : propertyPossibleValues) {
                                                     if (possibleValue != null && possibleValue.toString().equals(storedValue)) {
@@ -119,13 +181,14 @@ public abstract class ConvertTCompV0ToTckComponentMigrationTask extends Abstract
                                                         return possibleValue;
                                                     }
                                                 }
+                                                return null;
                                             }
                                         }
                                     }
                                 }
+                                
                                 return storedValue;
                             }
-
                         });
                         
                         //go through the tcompv0 self migration
@@ -169,7 +232,6 @@ public abstract class ConvertTCompV0ToTckComponentMigrationTask extends Abstract
                 
                 final TalendFileFactory fileFact = TalendFileFactory.eINSTANCE;
                 
-                //TODO tcompv0/javajet component force user to use double quote to wrap value most time, but tck one not do that, even expect not use double quote wrapper, need to consider that 
                 for(TckMigrationModel model : infos) {
                     if(model.fieldType == null || model.fieldType.isEmpty()) {
                         //field="TECHNICAL", and oldPath is value directly, so use it directly
@@ -185,13 +247,14 @@ public abstract class ConvertTCompV0ToTckComponentMigrationTask extends Abstract
                             }
                             
                             ComponentUtilities.addNodeProperty(nodeType, model.newPath, "COMPONENT_LIST");
+                            ComponentUtilities.setNodeValue(nodeType, model.newPath, "");
                             if(referenceType == null || "THIS_COMPONENT".equals(referenceType.name())) {
                                 if(oldUseConnectionElement == null) {
                                     ComponentUtilities.setNodeValue(nodeType, "USE_EXISTING_CONNECTION", "false");
                                 }
                             } else {
                                 final Object value = Property.class.cast(compProperties.getProperty(model.oldPath + ".componentInstanceId")).getStoredValue();
-                                ComponentUtilities.setNodeValue(nodeType, model.newPath, value == null ? null : String.valueOf(value));
+                                ComponentUtilities.setNodeValue(nodeType, model.newPath, value == null ? "" : String.valueOf(value));
                                 
                                 if(oldUseConnectionElement == null && value != null) {
                                     ComponentUtilities.setNodeValue(nodeType, "USE_EXISTING_CONNECTION", "true");
@@ -231,19 +294,23 @@ public abstract class ConvertTCompV0ToTckComponentMigrationTask extends Abstract
                                 } else {
                                     //no idea why tcompv0 model not return list, process it here
                                     value = new ArrayList<>();
-                                    for(int i=0;i<rowStarts.length;i++) {//correct the wrong list length
-                                        value.add(originValue);
+                                    if(rowStarts != null) {
+                                        for(int i=0;i<rowStarts.length;i++) {//correct the wrong list length
+                                            value.add(originValue);
+                                        }
                                     }
                                 }
-                                for(int i=0;i<rowStarts.length;i++) {
-                                    ElementValueType elementValue = fileFact.createElementValueType();
-                                    elementValue.setElementRef(model.newPath + "[]."+ newPath);
+                                if(rowStarts != null) {
+                                    for(int i=0;i<rowStarts.length;i++) {
+                                        ElementValueType elementValue = fileFact.createElementValueType();
+                                        elementValue.setElementRef(model.newPath + "[]."+ newPath);
                                     
-                                    Object item = i<value.size() ? value.get(i) : null;//have to process the strange tcompv0 model
-                                    elementValue.setValue(item == null ? null : String.valueOf(item));
+                                        Object item = i<value.size() ? value.get(i) : null;//have to process the strange tcompv0 model
+                                        elementValue.setValue(item == null ? null : String.valueOf(item));
                                     
-                                    //here for match tck model requirement in item, that need order
-                                    elementValues.set(rowStarts[i]++, elementValue);
+                                        //here for match tck model requirement in item, that need order
+                                        elementValues.set(rowStarts[i]++, elementValue);
+                                    }
                                 }
                             }
                             ComponentUtilities.addNodeProperty(nodeType, model.newPath, "TABLE");
@@ -272,11 +339,24 @@ public abstract class ConvertTCompV0ToTckComponentMigrationTask extends Abstract
                             if(ept != null) {
                                 ept.setName(model.newPath);
                             }
+                        } else if ("CHECK".equals(model.fieldType) || "CLOSED_LIST".equals(model.fieldType) || "RADIO".equals(model.fieldType)) {
+                            Property property = Property.class.cast(compProperties.getProperty(model.oldPath));
+                            Object value = property.getStoredValue();
+                            
+                            //if CHECK/CLOSED_LIST/RADIO use context value here, it mean they are dynamic setting now, or use dynamic setting before(add dynamic setting and remove it later)
+                            if (value instanceof String && ContextParameterUtils.isContainContextParam((String) value)) {
+                                value = getRealParamValueFromContext(processType, (String) value);
+                            }
+                            
+                            ElementParameterType ept = ParameterUtilTool.createParameterType(model.fieldType, model.newPath,
+                                    value == null ? null : correctValue(model.oldPath, String.valueOf(value)));
+                            ParameterUtilTool.addParameterType(nodeType, ept);
                         } else {
                             Property property = Property.class.cast(compProperties.getProperty(model.oldPath));
                             Object value = property.getStoredValue();
-                            //enum's tostring to call name(), so ok
-                            ElementParameterType ept = ParameterUtilTool.createParameterType(model.fieldType, model.newPath, value==null ? null : correctValue(model.oldPath, String.valueOf(value)));
+                            // enum's tostring to call name(), so ok
+                            ElementParameterType ept = ParameterUtilTool.createParameterType(model.fieldType, model.newPath,
+                                    value == null ? null : correctValue(model.oldPath, String.valueOf(value)));
                             ParameterUtilTool.addParameterType(nodeType, ept);
                         }
                     }
@@ -381,6 +461,16 @@ public abstract class ConvertTCompV0ToTckComponentMigrationTask extends Abstract
         return ExecutionResult.NOTHING_TO_DO;
     }
     
+    protected String correctComponentName(String componentName) {
+        if (componentName.indexOf("tSingleStore") >= 0) {
+           return componentName.replace("tSingleStore", "tJDBC");
+        }
+        if (componentName.indexOf("tDeltaLake") >= 0) {
+            return componentName.replace("tDeltaLake", "tJDBC");
+        }
+        return componentName;
+    }
+    
     protected String correctValue(String path, String value) {
         return value;
     }
@@ -435,8 +525,27 @@ public abstract class ConvertTCompV0ToTckComponentMigrationTask extends Abstract
         return result;
     }
 
-    private ElementParameterType getParameterType(NodeType node, String paramName) {
-        return ParameterUtilTool.findParameterType(node, paramName);
+    
+    private static String getRealParamValueFromContext(ProcessType processType, String value) {
+        String var = ContextParameterUtils.getVariableFromCode(value);
+        if (var != null) {
+            String defaultContextName = processType.getDefaultContext();
+            ContextType selectedContext = null;
+            for (Object obj : processType.getContext()) {
+                if (obj instanceof ContextType) {
+                    if (defaultContextName.equals(((ContextType) obj).getName())) {
+                        selectedContext = (ContextType) obj;
+                    }
+                }
+            }
+            if (selectedContext != null) {
+                ContextParameterType param = ContextUtils.getContextParameterTypeByName(selectedContext, var);
+                if (param != null) {
+                    return param.getValue();
+                }
+            }
+        }
+        return value;
     }
 
 }

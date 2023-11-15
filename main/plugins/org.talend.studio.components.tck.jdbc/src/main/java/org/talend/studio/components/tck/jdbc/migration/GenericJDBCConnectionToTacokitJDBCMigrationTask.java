@@ -89,7 +89,26 @@ public class GenericJDBCConnectionToTacokitJDBCMigrationTask extends AbstractIte
             tacokitDatabaseConnection.setDbmsId(connection.getDbmsId());
             tacokitDatabaseConnection.setURL(connection.getURL());
             tacokitDatabaseConnection.setDatabaseType(connection.getDatabaseType());
-            tacokitDatabaseConnection.setDriverJarPath(connection.getDriverJarPath());
+            if (connection.isContextMode()) {
+                tacokitDatabaseConnection.setDriverJarPath(connection.getDriverJarPath());
+            } else {
+                String driverPath = connection.getDriverJarPath();
+                StringBuffer newPathSB = new StringBuffer();
+                if (driverPath != null) {
+                    String[] values = driverPath.split(";");
+                    for (String v : values) {
+                        if (newPathSB.length() > 0) {
+                            newPathSB.append(";");
+                        }
+                        if (v.startsWith("\"") && v.endsWith("\"")) {
+                            newPathSB.append(v);
+                        } else {
+                            newPathSB.append("\"").append(v).append("\"");
+                        }
+                    }
+                } 
+                tacokitDatabaseConnection.setDriverJarPath(newPathSB.toString());
+            }
             tacokitDatabaseConnection.setDriverClass(connection.getDriverClass());
             tacokitDatabaseConnection.setUsername(connection.getUsername());
             tacokitDatabaseConnection.setPassword(connection.getPassword());
