@@ -7,8 +7,7 @@ Bundle-Version: 8.8.8.qualifier
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Bundle-Vendor: .Talend SA.
-Require-Bundle: javax.xml.rpc,
- org.apache.commons.collections,
+Require-Bundle: org.apache.commons.collections,
  org.apache.commons.io,
  org.apache.commons.logging,
  org.apache.commons.lang,
@@ -43,7 +42,7 @@ Require-Bundle: javax.xml.rpc,
  org.apache.log4j,
  org.eclipse.gef,
  org.talend.repository.view,
- biz.aQute.bndlib,
+ biz.aQute.bndlib;bundle-version="6.4.0",
  org.talend.repository.items.importexport,
  org.talend.repository.items.importexport.ui;bundle-version="6.0.0",
  org.talend.commons.runtime,
@@ -62,7 +61,8 @@ Require-Bundle: javax.xml.rpc,
  org.talend.libraries.apache,
  org.talend.common.ui.runtime,
  org.eclipse.gmf.runtime.notation,
- org.talend.studio.studio-utils
+ org.talend.studio.studio-utils,
+ org.apache.httpcomponents.httpcore
 Export-Package: org.talend.repository,
  org.talend.repository.constants,
  org.talend.repository.i18n,
@@ -112,5 +112,4 @@ Bundle-ClassPath: .,
  lib/velocity-engine-core-2.3.jar
 Import-Package: com.fasterxml.jackson.core,
  com.fasterxml.jackson.databind,
- org.slf4j,
  org.talend.utils.json;version="1.0.0"

@@ -168,7 +168,7 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
                 if (connection != null) {
                     boolean sameValues = true;
                     for (IElementParameter param : elementParams.getElementParameters()) {
-                        String repositoryValue = param.getRepositoryValue();
+                        String repositoryValue = param.calcRepositoryValue();
                         if (param.isShow(elementParams.getElementParameters()) && repositoryValue != null
                                 && !param.getName().equals("PROPERTY_TYPE")) {
                             Object repValue = RepositoryToComponentProperty.getValue(connection, repositoryValue, null);

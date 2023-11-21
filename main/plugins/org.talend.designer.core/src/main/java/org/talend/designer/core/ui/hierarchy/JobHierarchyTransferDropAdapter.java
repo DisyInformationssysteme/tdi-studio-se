@@ -12,12 +12,12 @@
 // ============================================================================
 package org.talend.designer.core.ui.hierarchy;
 
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.ui.views.navigator.LocalSelectionTransfer;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
@@ -38,7 +38,7 @@ public class JobHierarchyTransferDropAdapter implements TransferDropTargetListen
     }
 
     public Transfer getTransfer() {
-        return LocalSelectionTransfer.getInstance();
+        return LocalSelectionTransfer.getTransfer();
     }
 
     public boolean isEnabled(DropTargetEvent event) {

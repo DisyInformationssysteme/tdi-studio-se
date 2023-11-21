@@ -6,7 +6,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
@@ -20,6 +19,7 @@ import org.talend.core.model.properties.TacokitDatabaseConnectionItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.cwm.helper.ResourceHelper;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.BuiltInKeys;
@@ -83,13 +83,33 @@ public class GenericJDBCConnectionToTacokitJDBCMigrationTask extends AbstractIte
             property.setPurpose(item.getProperty().getPurpose());
             property.setStatusCode(item.getProperty().getStatusCode());
             property.setVersion(item.getProperty().getVersion());
-            property.getAdditionalProperties().addAll(EcoreUtil.copyAll(item.getProperty().getAdditionalProperties()));
+            property.getAdditionalProperties().addAll(item.getProperty().getAdditionalProperties());
+            item.getProperty().getAdditionalProperties().clear();
 
             tacokitDatabaseConnection.getProperties().putAll(connection.getProperties());
             tacokitDatabaseConnection.setDbmsId(connection.getDbmsId());
             tacokitDatabaseConnection.setURL(connection.getURL());
             tacokitDatabaseConnection.setDatabaseType(connection.getDatabaseType());
-            tacokitDatabaseConnection.setDriverJarPath(connection.getDriverJarPath());
+            if (connection.isContextMode()) {
+                tacokitDatabaseConnection.setDriverJarPath(connection.getDriverJarPath());
+            } else {
+                String driverPath = connection.getDriverJarPath();
+                StringBuffer newPathSB = new StringBuffer();
+                if (driverPath != null) {
+                    String[] values = driverPath.split(";");
+                    for (String v : values) {
+                        if (newPathSB.length() > 0) {
+                            newPathSB.append(";");
+                        }
+                        if (v.startsWith("\"") && v.endsWith("\"")) {
+                            newPathSB.append(v);
+                        } else {
+                            newPathSB.append("\"").append(v).append("\"");
+                        }
+                    }
+                } 
+                tacokitDatabaseConnection.setDriverJarPath(newPathSB.toString());
+            }
             tacokitDatabaseConnection.setDriverClass(connection.getDriverClass());
             tacokitDatabaseConnection.setUsername(connection.getUsername());
             tacokitDatabaseConnection.setPassword(connection.getPassword());
@@ -98,7 +118,8 @@ public class GenericJDBCConnectionToTacokitJDBCMigrationTask extends AbstractIte
             tacokitDatabaseConnection.getProperties().put(BuiltInKeys.TACOKIT_CONFIG_ID, configNode.getId());
             tacokitDatabaseConnection.getProperties().put(BuiltInKeys.TACOKIT_CONFIG_PARENT_ID, configNode.getParentId());
 
-            tacokitDatabaseConnection.setCdcConns(EcoreUtil.copy(connection.getCdcConns()));
+            tacokitDatabaseConnection.setCdcConns(connection.getCdcConns());
+            connection.setCdcConns(null);
             tacokitDatabaseConnection.setCdcTypeMode(connection.getCdcTypeMode());
             tacokitDatabaseConnection.setContextId(connection.getContextId());
             tacokitDatabaseConnection.setContextMode(connection.isContextMode());
@@ -129,37 +150,84 @@ public class GenericJDBCConnectionToTacokitJDBCMigrationTask extends AbstractIte
             tacokitDatabaseConnection.setVersion(connection.getVersion());
             tacokitDatabaseConnection.setReadOnly(connection.isReadOnly());
             tacokitDatabaseConnection.setName(connection.getName());
-            tacokitDatabaseConnection.setNamespace(EcoreUtil.copy(connection.getNamespace()));
+            tacokitDatabaseConnection.setNamespace(connection.getNamespace());
+            connection.setNamespace(null);
 
             tacokitDatabaseConnection.setIsCaseSensitive(connection.isIsCaseSensitive());
-            tacokitDatabaseConnection.setMachine(EcoreUtil.copy(connection.getMachine()));
+            tacokitDatabaseConnection.setMachine(connection.getMachine());
+            connection.setMachine(null);
             tacokitDatabaseConnection.setPathname(connection.getPathname());
             //tacokitDatabaseConnection.setPort(connection.getPort());
-            tacokitDatabaseConnection.setQueries(EcoreUtil.copy(connection.getQueries()));
-            tacokitDatabaseConnection.setStereotype(EcoreUtil.copy(connection.getStereotype()));
+            tacokitDatabaseConnection.setQueries(connection.getQueries());
+            connection.setQueries(null);
+            
+            tacokitDatabaseConnection.setStereotype(connection.getStereotype());
+            connection.setStereotype(null);
+            
             tacokitDatabaseConnection.setSupportNLS(connection.isSupportNLS());
 
-            tacokitDatabaseConnection.getDataPackage().addAll(EcoreUtil.copyAll(connection.getDataPackage()));
-            tacokitDatabaseConnection.getConstraint().addAll(EcoreUtil.copyAll(connection.getConstraint()));
-            tacokitDatabaseConnection.getChangeRequest().addAll(EcoreUtil.copyAll(connection.getChangeRequest()));
-            tacokitDatabaseConnection.getClientDependency().addAll(EcoreUtil.copyAll(connection.getClientDependency()));
-            tacokitDatabaseConnection.getDataManager().addAll(EcoreUtil.copyAll(connection.getDataManager()));
-            tacokitDatabaseConnection.getDasdlProperty().addAll(EcoreUtil.copyAll(connection.getDasdlProperty()));
-            tacokitDatabaseConnection.getDeployedSoftwareSystem().addAll(EcoreUtil.copyAll(connection.getDeployedSoftwareSystem()));
-            tacokitDatabaseConnection.getDescription().addAll(EcoreUtil.copyAll(connection.getDescription()));
-            tacokitDatabaseConnection.getDocument().addAll(EcoreUtil.copyAll(connection.getDocument()));
-            tacokitDatabaseConnection.getElementNode().addAll(EcoreUtil.copyAll(connection.getElementNode()));
-            tacokitDatabaseConnection.getImportedElement().addAll(EcoreUtil.copyAll(connection.getImportedElement()));
-            tacokitDatabaseConnection.getImporter().addAll(EcoreUtil.copyAll(connection.getImporter()));
-            tacokitDatabaseConnection.getMeasurement().addAll(EcoreUtil.copyAll(connection.getMeasurement()));
-            tacokitDatabaseConnection.getOwnedElement().addAll(EcoreUtil.copyAll(connection.getOwnedElement()));
-            tacokitDatabaseConnection.getParameters().addAll(EcoreUtil.copyAll(connection.getParameters()));
-            tacokitDatabaseConnection.getRenderedObject().addAll(EcoreUtil.copyAll(connection.getRenderedObject()));
-            tacokitDatabaseConnection.getResourceConnection().addAll(EcoreUtil.copyAll(connection.getResourceConnection()));
-            tacokitDatabaseConnection.getResponsibleParty().addAll(EcoreUtil.copyAll(connection.getResponsibleParty()));
-            tacokitDatabaseConnection.getSupplierDependency().addAll(EcoreUtil.copyAll(connection.getSupplierDependency()));
-            tacokitDatabaseConnection.getTaggedValue().addAll(EcoreUtil.copyAll(connection.getTaggedValue()));
-            tacokitDatabaseConnection.getVocabularyElement().addAll(EcoreUtil.copyAll(connection.getVocabularyElement()));
+            tacokitDatabaseConnection.getDataPackage().addAll(connection.getDataPackage());
+            connection.getDataPackage().clear();
+            
+            tacokitDatabaseConnection.getConstraint().addAll(connection.getConstraint());
+            connection.getConstraint().clear();
+            
+            tacokitDatabaseConnection.getChangeRequest().addAll(connection.getChangeRequest());
+            connection.getChangeRequest().clear();
+            
+            tacokitDatabaseConnection.getClientDependency().addAll(connection.getClientDependency());
+            connection.getClientDependency().clear();
+            
+            tacokitDatabaseConnection.getDataManager().addAll(connection.getDataManager());
+            connection.getDataManager().clear();
+            
+            tacokitDatabaseConnection.getDasdlProperty().addAll(connection.getDasdlProperty());
+            connection.getDasdlProperty().clear();
+            
+            tacokitDatabaseConnection.getDeployedSoftwareSystem().addAll(connection.getDeployedSoftwareSystem());
+            connection.getDeployedSoftwareSystem().clear();
+            
+            tacokitDatabaseConnection.getDescription().addAll(connection.getDescription());
+            connection.getDescription().clear();
+            
+            tacokitDatabaseConnection.getDocument().addAll(connection.getDocument());
+            connection.getDocument().clear();
+            
+            tacokitDatabaseConnection.getElementNode().addAll(connection.getElementNode());
+            connection.getElementNode().clear();
+            
+            tacokitDatabaseConnection.getImportedElement().addAll(connection.getImportedElement());
+            connection.getImportedElement().clear();
+            
+            tacokitDatabaseConnection.getImporter().addAll(connection.getImporter());
+            connection.getImporter().clear();
+            
+            tacokitDatabaseConnection.getMeasurement().addAll(connection.getMeasurement());
+            connection.getMeasurement().clear();
+            
+            tacokitDatabaseConnection.getOwnedElement().addAll(connection.getOwnedElement());
+            connection.getOwnedElement().clear();
+            
+            tacokitDatabaseConnection.getParameters().addAll(connection.getParameters());
+            connection.getParameters().clear();
+            
+            tacokitDatabaseConnection.getRenderedObject().addAll(connection.getRenderedObject());
+            connection.getRenderedObject().clear();
+            
+            tacokitDatabaseConnection.getResourceConnection().addAll(connection.getResourceConnection());
+            connection.getResourceConnection().clear();
+            
+            tacokitDatabaseConnection.getResponsibleParty().addAll(connection.getResponsibleParty());
+            connection.getResponsibleParty().clear();
+            
+            tacokitDatabaseConnection.getSupplierDependency().addAll(connection.getSupplierDependency());
+            connection.getSupplierDependency().clear();
+            
+            tacokitDatabaseConnection.getTaggedValue().addAll(connection.getTaggedValue());
+            connection.getTaggedValue().clear();
+            
+            tacokitDatabaseConnection.getVocabularyElement().addAll(connection.getVocabularyElement());
+            connection.getVocabularyElement().clear();
             
             tacokitDatabaseConnection.setEnableDBType(false);
 
@@ -171,11 +239,15 @@ public class GenericJDBCConnectionToTacokitJDBCMigrationTask extends AbstractIte
                 tacokitDatabaseConnection.setSQLMode(true);
             }
             try {
+                String oldUUID = ResourceHelper.getUUID(connection);
+                factory.save(item, true); // Save old item first to avoid resource release
                 IRepositoryViewObject object = factory.getSpecificVersion(item.getProperty().getId(),
                         item.getProperty().getVersion(), true);
-                factory.deleteObjectPhysical(object);
-                factory.create(tacokitDatabaseConnectionItem, new Path(item.getState().getPath()), true);
-                return ExecutionResult.SUCCESS_WITH_ALERT;
+                factory.deleteObjectPhysical(object); // Delete old item 
+                factory.create(tacokitDatabaseConnectionItem, new Path(item.getState().getPath()), true); // Create new item
+                ResourceHelper.setUUid(tacokitDatabaseConnection, oldUUID); // Set UUID and re-save to keep save UUID
+                factory.save(tacokitDatabaseConnectionItem, true);
+                return ExecutionResult.SUCCESS_NO_ALERT;
             } catch (Exception e) {
                 ExceptionHandler.process(e); 
                 return ExecutionResult.FAILURE;

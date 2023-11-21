@@ -12,12 +12,18 @@ import java.util.logging.Logger;
 
 import javax.wsdl.xml.WSDLLocator;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.xml.sax.InputSource;
 
 public class WSDLLocatorImpl implements WSDLLocator {
@@ -30,24 +36,30 @@ public class WSDLLocatorImpl implements WSDLLocator {
 
     private ServiceHelperConfiguration configuration;
 
-    private HttpClient httpClient;
+    private CloseableHttpClient httpClient;
 
     private Set<InputStream> inputStreams;
 
     public WSDLLocatorImpl(ServiceHelperConfiguration configuration, String wsdlUri) {
         this.configuration = configuration;
-        this.httpClient = createHttpClient();
         this.wsdlUri = wsdlUri;
         inputStreams = new HashSet<InputStream>();
     }
 
     public InputSource getBaseInputSource() {
-        GetMethod get = createGetMethod(wsdlUri);
         try {
-            httpClient.executeMethod(get);
-            InputStream is = get.getResponseBodyAsStream();
-            inputStreams.add(is);
-            return new InputSource(is);
+            createHttpClient();
+            URL url = new URL(wsdlUri);
+            HttpGet httpGet = createGetMethod(wsdlUri);
+            HttpHost targetHost = new HttpHost(url.getHost(), url.getPort(), url.getProtocol());
+            CloseableHttpResponse httpResponse = httpClient.execute(targetHost, httpGet);
+            try {
+                InputStream is = httpResponse.getEntity().getContent();
+                inputStreams.add(is);
+                return new InputSource(is);
+            } finally {
+                httpResponse.close();
+            }
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -55,11 +67,13 @@ public class WSDLLocatorImpl implements WSDLLocator {
 
     public InputSource getImportInputSource(String parentLocation, String importLocation) {
         try {
+            createHttpClient();
             URL url = getURL(parentLocation, importLocation);
             latestImportUri = url.toExternalForm();
-            GetMethod get = createGetMethod(latestImportUri);
-            httpClient.executeMethod(get);
-            InputStream is = get.getResponseBodyAsStream();
+            HttpGet httpGet = createGetMethod(latestImportUri);
+            HttpHost targetHost = new HttpHost(url.getHost(), url.getPort(), url.getProtocol());
+            CloseableHttpResponse httpResponse = httpClient.execute(targetHost, httpGet);
+            InputStream is = httpResponse.getEntity().getContent();
             inputStreams.add(is);
             return new InputSource(is);
         } catch (MalformedURLException ex) {
@@ -101,38 +115,41 @@ public class WSDLLocatorImpl implements WSDLLocator {
             }
         }
         inputStreams.clear();
+        try {
+            httpClient.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private GetMethod createGetMethod(String uri) {
-        GetMethod get = new GetMethod(uri);
+    private HttpGet createGetMethod(String uri) {
+        HttpGet httpGet = new HttpGet(uri);
         if (configuration.getCookie() != null) {
-            get.setRequestHeader(HTTP_HEADER_COOKIE, configuration.getCookie());
+            httpGet.addHeader(HTTP_HEADER_COOKIE, configuration.getCookie());
         }
 
-        return get;
+        return httpGet;
     }
 
-    private HttpClient createHttpClient() {
-        HttpClient httpClient = new HttpClient();
+    private void createHttpClient() {
+        RequestConfig config = null;
         if (configuration.getProxyServer() != null) {
-            HostConfiguration hostConfiguration = new HostConfiguration();
-            hostConfiguration.setProxy(configuration.getProxyServer(), configuration.getProxyPort());
-            httpClient.setHostConfiguration(hostConfiguration);
+            HttpHost proxy = new HttpHost(configuration.getProxyServer(), configuration.getProxyPort());
+            config = RequestConfig.custom().setProxy(proxy).build();
         }
-
+        CredentialsProvider credsProvider = null;
         if (configuration.getUsername() != null) {
             Credentials credentials = new UsernamePasswordCredentials(configuration.getUsername(), configuration.getPassword());
-
-            httpClient.getState().setCredentials(AuthScope.ANY, credentials);
+            credsProvider = new BasicCredentialsProvider();
+            credsProvider.setCredentials(AuthScope.ANY, credentials);
         }
 
         if (configuration.getProxyUsername() != null) {
             Credentials credentials = new UsernamePasswordCredentials(configuration.getProxyUsername(),
                     configuration.getProxyPassword());
-
-            httpClient.getState().setProxyCredentials(AuthScope.ANY, credentials);
-            httpClient.getHostConfiguration().setProxy(configuration.getProxyServer(), configuration.getProxyPort());
+            credsProvider = new BasicCredentialsProvider();
+            credsProvider.setCredentials(AuthScope.ANY, credentials);
         }
-        return httpClient;
+        httpClient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).setDefaultRequestConfig(config).build();
     }
 }

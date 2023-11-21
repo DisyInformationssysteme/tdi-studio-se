@@ -1007,7 +1007,7 @@ public class StatsAndLogsManager {
         // 7253
         IElementParameter elementParameter = connectionNode.getElementParameter("PROPERTY");
         if (elementParameter != null) {
-            String repositoryValue = elementParameter.getRepositoryValue();
+            String repositoryValue = elementParameter.calcRepositoryValue();
             if ("DATABASE:SQLITE".equals(repositoryValue)) {
                 if (connectionNode.getElementParameter(EParameterName.DBNAME.getName()) != null) {
                     connectionNode.getElementParameter(EParameterName.DBNAME.getName())
@@ -1178,7 +1178,7 @@ public class StatsAndLogsManager {
         paramList.addAll(statsAndLogsParametersFinalPart(process));
 
         for (IElementParameter param : paramList) {
-            if (param.getRepositoryValue() != null) {
+            if (param.calcRepositoryValue() != null) {
                 // if any of the parameter of stat&logs is using repository, then force to link it to the name of the
                 // property for stat&logs
                 param.setRepositoryProperty(EParameterName.PROPERTY_TYPE.getName());

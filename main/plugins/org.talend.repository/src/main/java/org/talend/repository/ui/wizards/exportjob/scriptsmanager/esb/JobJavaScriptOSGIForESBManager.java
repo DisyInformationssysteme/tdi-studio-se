@@ -983,9 +983,9 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             if (StringUtils.isNotBlank(requireCapability)) {
                 // set back to 1.8, version from:
                 // https://github.com/bndtools/bnd/blob/master/biz.aQute.bndlib/src/aQute/bnd/osgi/Clazz.java#L141
-                requireCapability = requireCapability.replace(Clazz.JAVA.OpenJDK9.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
-                        .replace(Clazz.JAVA.OpenJDK10.getFilter(), Clazz.JAVA.OpenJDK8.getFilter())
-                        .replace(Clazz.JAVA.OpenJDK11.getFilter(), Clazz.JAVA.OpenJDK8.getFilter());
+                requireCapability = requireCapability.replace(Clazz.JAVA.Java_9.getFilter(), Clazz.JAVA.Java_8.getFilter())
+                        .replace(Clazz.JAVA.Java_10.getFilter(), Clazz.JAVA.Java_8.getFilter())
+                        .replace(Clazz.JAVA.Java_11.getFilter(), Clazz.JAVA.Java_8.getFilter());
                 manifest.getMainAttributes().put(new Attributes.Name(Analyzer.REQUIRE_CAPABILITY), requireCapability);
             }
         }

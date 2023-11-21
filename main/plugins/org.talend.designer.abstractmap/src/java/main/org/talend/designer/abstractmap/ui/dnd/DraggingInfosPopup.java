@@ -77,7 +77,7 @@ public final class DraggingInfosPopup {
         private Label labelDropInvalid;
 
         public Popup(Shell parent) {
-            super(parent, SWT.ON_TOP, false, false, false, false, null, null);
+            super(parent, SWT.ON_TOP, false, false, false, false, false, null, null);
         }
 
         @Override

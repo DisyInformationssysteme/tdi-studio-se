@@ -6,3 +6,4 @@ Bundle-Version: 8.8.8.qualifier
 Require-Bundle: org.eclipse.core.runtime
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: .Talend SA.
+Automatic-Module-Name: org.talend.designer.components.libs

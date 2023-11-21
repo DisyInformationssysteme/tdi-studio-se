@@ -69,7 +69,10 @@ public class TaCoKitRetriveSchemaAction extends TaCoKitMetadataContextualAction 
         } catch (Exception e) {
             ExceptionHandler.process(e);
         } 
-        return new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), wizard);
+        if (wizard != null ) {
+            return new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), wizard);
+        }
+       return null;
     }
 
     public DatabaseTableWizard createWizard(final IWorkbench wb) throws Exception {
@@ -79,9 +82,6 @@ public class TaCoKitRetriveSchemaAction extends TaCoKitMetadataContextualAction 
         final ManagerConnection managerConnection = new ManagerConnection();
         DatabaseConnection connection = ConvertionHelper
                 .fillJDBCParams4TacokitDatabaseConnection(runtimeData.getConnectionItem().getConnection());
-        // boolean useKrb = Boolean.valueOf(connection.getParameters().get(ConnParameterKeys.CONN_PARA_KEY_USE_KRB));
-        // TUP-596 : Update the context name in connection when the user does a context switch in DI
-        String oldContextName = connection.getContextName();
         Connection copyConnection = MetadataConnectionUtils.prepareConection(connection);
         if (copyConnection == null) {
             return null;

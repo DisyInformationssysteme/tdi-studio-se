@@ -248,7 +248,8 @@ public class TableElementParameter extends TaCoKitElementParameter {
             return Optional.empty();
         }
         final Map<String, Object> row = tableValue.get(0);
-        for (final String repositoryKey : getRepositoryValue().split("\\|")) {
+        String repositoryValue = calcRepositoryValue();
+        for (final String repositoryKey : repositoryValue.split("\\|")) {
             for (final String cellKey : row.keySet()) {
                 if (cellKey.startsWith(repositoryKey)) {
                     return Optional.of(repositoryKey);

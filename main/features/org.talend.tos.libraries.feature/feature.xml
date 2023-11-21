@@ -29,7 +29,6 @@
   <plugin id="org.talend.libraries.ehcache" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.excel" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.groovy" download-size="0" install-size="0" version="0.0.0"/>
-  <plugin id="org.talend.libraries.guava" download-size="0" install-size="0" version="0.0.0"/>
   <plugin id="org.talend.libraries.jackson" download-size="0" install-size="0" version="0.0.0"/>
   <plugin download-size="0" install-size="0" version="0.0.0" unpack="false" id="org.talend.libraries.javacsv"/>
   <plugin id="org.talend.libraries.jax" download-size="0" install-size="0" version="0.0.0"/>

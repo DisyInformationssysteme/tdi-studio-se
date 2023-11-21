@@ -11,3 +11,4 @@ Bundle-ClassPath: .,
  lib/jnacl-0.1.0.jar
 Export-Package: org.zeromq,
  zmq
+Automatic-Module-Name: org.talend.libraries.zmq

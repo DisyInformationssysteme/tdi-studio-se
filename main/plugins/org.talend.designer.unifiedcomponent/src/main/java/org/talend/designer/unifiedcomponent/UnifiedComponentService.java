@@ -264,11 +264,11 @@ public class UnifiedComponentService implements IUnifiedComponentService {
 
             String newParamMappedValue = newParamMapping.get(newParam.getName());
             String newDefaultParamValueMappedValue = newDefaultParamValueMapping.get(newParam.getName());
-            String newParamRepositoryValue = newParam.getRepositoryValue();
+            String newParamRepositoryValue = newParam.calcRepositoryValue();
             IElementParameter param2Find = null;
             for (IElementParameter oldParam : oldParams) {
                 String oldParamMappedValue = oldParamMapping.get(oldParam.getName());
-                String oldParamRepositoryValue = oldParam.getRepositoryValue();
+                String oldParamRepositoryValue = oldParam.calcRepositoryValue();
                 if (newParamMappedValue != null) {
                     if (newParamMappedValue.equals(oldParamMappedValue)
                             || newParamMappedValue.equalsIgnoreCase(oldParamRepositoryValue)) {

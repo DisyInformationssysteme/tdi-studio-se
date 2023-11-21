@@ -156,8 +156,8 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     }
 
     @Override
-    public String getRepositoryValue() {
-        String valueFromParentClass = super.getRepositoryValue();
+    public String calcRepositoryValue() {
+        String valueFromParentClass = super.calcRepositoryValue();
         if (StringUtils.isNotBlank(valueFromParentClass)) {
             return valueFromParentClass;
         }

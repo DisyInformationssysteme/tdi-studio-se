@@ -29,3 +29,4 @@ Export-Package: org.talend.designer.abstractmap,
  org.talend.designer.abstractmap.ui.visualmap.link,
  org.talend.designer.abstractmap.ui.visualmap.zone
 Bundle-Vendor: .Talend SA.
+Automatic-Module-Name: org.talend.designer.abstractmap

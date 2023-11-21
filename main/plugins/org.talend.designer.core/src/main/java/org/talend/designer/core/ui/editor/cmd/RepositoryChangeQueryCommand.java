@@ -100,7 +100,7 @@ public class RepositoryChangeQueryCommand extends Command {
 
         if (propertyName.equals(EParameterName.QUERYSTORE_TYPE.getName()) && (EmfComponent.BUILTIN.equals(value))) {
             for (IElementParameter param : elem.getElementParameters()) {
-                String repositoryValue = param.getRepositoryValue();
+                String repositoryValue = param.calcRepositoryValue();
                 if (param.isShow(elem.getElementParameters()) && (repositoryValue != null)
                         && (!param.getName().equals(EParameterName.QUERYSTORE_TYPE.getName()))) {
                     param.setRepositoryValueUsed(true);

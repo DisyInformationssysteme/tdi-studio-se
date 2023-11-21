@@ -32,3 +32,4 @@ Require-Bundle: org.eclipse.jface.text,
  org.eclipse.core.expressions
 Bundle-ActivationPolicy: lazy
 Import-Package: org.apache.commons.io
+Automatic-Module-Name: org.talend.repository.resource

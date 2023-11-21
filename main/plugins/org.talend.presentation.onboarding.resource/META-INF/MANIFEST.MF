@@ -28,3 +28,4 @@ Require-Bundle: org.eclipse.equinox.registry,
 Bundle-Vendor: .Talend SA.
 Export-Package: org.talend.presentation.onboarding.resource.handlers,
  org.talend.presentation.onboarding.resource.utils
+Automatic-Module-Name: org.talend.presentation.onboarding.resource

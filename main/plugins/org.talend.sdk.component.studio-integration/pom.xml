@@ -234,6 +234,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
+			  <excludeGroupIds>org.talend.studio</excludeGroupIds>
               <includeScope>runtime</includeScope>
               <outputDirectory>${project.basedir}/lib</outputDirectory>
               <stripVersion>true</stripVersion>
@@ -242,37 +243,12 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
-        <executions>
-          <execution>
-            <id>test-compile</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-          <compilerId>eclipse</compilerId>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-compiler-eclipse</artifactId>
-            <version>2.8.5</version>
-          </dependency>
-        </dependencies>
-      </plugin>
+
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M3</version>
+        <version>3.1.2</version>
         <executions>
           <execution>
             <id>unit-tests</id>
@@ -291,6 +267,23 @@
             <test.version>${component-runtime.version}</test.version>
             <java.version>${java.version}</java.version>
           </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-compiler-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <executions>
+          <execution>
+            <id>unit-tests</id>
+            <phase>testCompile</phase>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+            <pomOnlyDependencies>consider</pomOnlyDependencies>
         </configuration>
       </plugin>
     </plugins>

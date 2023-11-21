@@ -7,3 +7,4 @@ Bundle-Vendor: .Talend SA.
 Require-Bundle: org.talend.commons.runtime,
  org.talend.presentation.onboarding,
  org.talend.presentation.onboarding.resource
+Automatic-Module-Name: org.talend.presentation.onboarding.resource.tos

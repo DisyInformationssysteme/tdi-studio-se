@@ -3,6 +3,13 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Webservice Plug-in
 Bundle-SymbolicName: org.talend.designer.webservice;singleton:=true
 Bundle-Version: 8.8.8.qualifier
+Import-Package: org.apache.http,
+ org.apache.http.auth,
+ org.apache.http.client,
+ org.apache.http.client.config;version="4.5.14",
+ org.apache.http.client.methods,
+ org.apache.http.impl.client,
+ org.apache.http.message;version="4.4.16"
 Bundle-Activator: org.talend.designer.webservice.WebServiceComponentPlugin
 Require-Bundle: org.apache.commons.commons-beanutils,
  org.talend.core,
@@ -18,7 +25,6 @@ Require-Bundle: org.apache.commons.commons-beanutils,
  org.talend.libraries.apache,
  org.talend.metadata.managment.ui,
  javax.wsdl;bundle-version="1.6.2",
- org.apache.commons.httpclient,
  org.talend.components.api,
  org.talend.commons.runtime,
  org.talend.core.runtime,
@@ -31,6 +37,6 @@ Require-Bundle: org.apache.commons.commons-beanutils,
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/talend-ws-1.0.jar,
- lib/XmlSchema-1.4.5.jar,
- lib/xerces-1.2.3.jar
+ lib/XmlSchema-1.4.5.jar
 Bundle-Vendor: .Talend SA.
+Automatic-Module-Name: org.talend.designer.webservice

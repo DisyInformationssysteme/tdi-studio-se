@@ -23,6 +23,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.util.DelegatingDropAdapter;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -55,7 +56,6 @@ import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.actions.ActionGroup;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.views.navigator.LocalSelectionTransfer;
 import org.talend.core.model.process.IProcess2;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.i18n.Messages;
@@ -516,12 +516,12 @@ public class JobHierarchyViewPart extends ViewPart implements IJobHierarchyViewP
 
         // DND on empty hierarchy
         DropTarget dropTarget = new DropTarget(fPagebook, DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK | DND.DROP_DEFAULT);
-        dropTarget.setTransfer(new Transfer[] { LocalSelectionTransfer.getInstance() });
+        dropTarget.setTransfer(new Transfer[] { LocalSelectionTransfer.getTransfer() });
         dropTarget.addDropListener(new JobHierarchyTransferDropAdapter(this));
     }
 
     private void addDropAdapters(AbstractTreeViewer viewer) {
-        Transfer[] transfers = new Transfer[] { LocalSelectionTransfer.getInstance() };
+        Transfer[] transfers = new Transfer[] { LocalSelectionTransfer.getTransfer() };
         int ops = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK | DND.DROP_DEFAULT;
         DelegatingDropAdapter delegatingDropAdapter = new DelegatingDropAdapter();
         delegatingDropAdapter.addDropTargetListener(new JobHierarchyTransferDropAdapter(this));

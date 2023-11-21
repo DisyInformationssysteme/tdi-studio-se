@@ -575,7 +575,7 @@ public class ComboController extends AbstractElementPropertySectionController {
                     comboValue = (String) value;
                 }
                 boolean isRepositoryValueUsed = param.isRepositoryValueUsed();
-                String repositoryValue = param.getRepositoryValue();
+                String repositoryValue = param.calcRepositoryValue();
                 if (!isRepositoryValueUsed && StringUtils.isBlank(repositoryValue) && paramItems != null
                         && paramItems.length > 0) {
 

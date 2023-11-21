@@ -26,3 +26,4 @@ Require-Bundle: org.eclipse.ui.workbench,
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: .Talend SA.
 Import-Package: org.eclipse.gef.commands
+Automatic-Module-Name: org.talend.designer.filemultischemas

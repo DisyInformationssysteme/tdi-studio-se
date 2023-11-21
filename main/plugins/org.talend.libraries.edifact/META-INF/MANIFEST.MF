@@ -5,3 +5,4 @@ Bundle-SymbolicName: org.talend.libraries.edifact;singleton:=true
 Bundle-Version: 8.8.8.qualifier
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.libraries.edifact

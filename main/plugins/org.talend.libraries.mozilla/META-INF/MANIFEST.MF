@@ -18,3 +18,4 @@ Export-Package: com.netscape.sasl,
  netscape.ldap.factory,
  netscape.ldap.util
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.libraries.mozilla

@@ -55,3 +55,4 @@ Export-Package: org.talend.designer.mapper,
  org.talend.designer.mapper.ui.visualmap.table,
  org.talend.designer.mapper.utils,
  org.talend.designer.mapper.utils.problems
+Automatic-Module-Name: org.talend.designer.mapper

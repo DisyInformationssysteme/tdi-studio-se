@@ -341,8 +341,10 @@ public class TextController extends AbstractElementPropertySectionController {
             return false;
         }
 
+        String repositoryValue = null;
         return parameter.isRepositoryValueUsed()
                 && (parameter.getName().equals(EParameterName.PASS.getName()) || parameter.getName().contains("PASSWORD") || //$NON-NLS-1$
-                parameter.getRepositoryValue() != null && parameter.getRepositoryValue().contains("PASSWORD")); //$NON-NLS-1$
+                        (repositoryValue = parameter.calcRepositoryValue()) != null
+                                && repositoryValue.contains("PASSWORD")); //$NON-NLS-1$
     }
 }

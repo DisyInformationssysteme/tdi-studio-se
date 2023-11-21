@@ -52,4 +52,5 @@ Import-Package: org.talend.components.api.component,
  org.talend.daikon.runtime,
  org.talend.daikon.properties.property,
  org.talend.daikon.properties.runtime
+Automatic-Module-Name: org.talend.designer.core.generic
 

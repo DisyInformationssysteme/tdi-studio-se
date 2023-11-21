@@ -44,3 +44,4 @@ Require-Bundle: org.eclipse.ui,
  org.talend.utils,
  org.talend.themes.core
 Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: org.talend.designer.xmlmap

@@ -16,3 +16,4 @@ Require-Bundle: org.eclipse.ui,
  org.talend.commons.runtime
 Eclipse-LazyStart: true
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.rcp.branding.tos

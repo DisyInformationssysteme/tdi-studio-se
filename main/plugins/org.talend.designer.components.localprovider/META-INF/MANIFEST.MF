@@ -24,3 +24,4 @@ Bundle-Vendor: .Talend SA.
 Bundle-ClassPath: .
 Export-Package: org.talend.designer.components.lookup.common
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.designer.components.localprovider

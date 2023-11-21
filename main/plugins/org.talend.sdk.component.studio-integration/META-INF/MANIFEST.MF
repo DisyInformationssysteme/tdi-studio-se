@@ -141,3 +141,4 @@ Import-Package: org.slf4j,
  org.talend.components.api.properties,
  org.talend.designer.core.ui.event
 Bundle-Localization: plugin
+Automatic-Module-Name: org.talend.sdk.component.studio.integration

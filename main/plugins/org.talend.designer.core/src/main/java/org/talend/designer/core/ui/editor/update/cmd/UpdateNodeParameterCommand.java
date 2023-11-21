@@ -528,7 +528,8 @@ public class UpdateNodeParameterCommand extends Command {
                                 node.setPropertyValue(param.getName(), objectValue);
                             }
                             if (!("tMDMReceive".equals(node.getComponent().getName()) && "XPATH_PREFIX".equals(param //$NON-NLS-1$ //$NON-NLS-2$
-                                    .getRepositoryValue()))  && !ProcessUpdateManager.isIgnoreJDBCRepositoryParameter(node, repositoryValue)
+                                    .calcRepositoryValue()))
+                                    && !ProcessUpdateManager.isIgnoreJDBCRepositoryParameter(node, repositoryValue)
                                     && param.getFieldType() != EParameterFieldType.MEMO_SQL) {
                                 param.setRepositoryValueUsed(true);
                                 param.setReadOnly(true);
@@ -625,7 +626,7 @@ public class UpdateNodeParameterCommand extends Command {
                 }
                 node.setPropertyValue(propertyName, EmfComponent.BUILTIN);
                 for (IElementParameter param : node.getElementParameters()) {
-                    if (param.getRepositoryValue() == null || param.getRepositoryProperty() != null
+                    if (param.calcRepositoryValue() == null || param.getRepositoryProperty() != null
                             && !param.getRepositoryProperty().equals(parentParamName)) {
                         continue;
                     }
@@ -646,7 +647,7 @@ public class UpdateNodeParameterCommand extends Command {
     }
 
     private String getReposiotryValueForOldJDBC(Node node, Connection repositoryConnection, IElementParameter param) {
-        String repositoryValue = param.getRepositoryValue();
+        String repositoryValue = param.calcRepositoryValue();
         // for JDBC component of mr process
         if (repositoryConnection instanceof DatabaseConnection) {
             String databaseType = ((DatabaseConnection) repositoryConnection).getDatabaseType();

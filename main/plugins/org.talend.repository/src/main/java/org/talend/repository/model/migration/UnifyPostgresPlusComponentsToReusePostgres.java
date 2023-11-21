@@ -165,11 +165,7 @@ public class UnifyPostgresPlusComponentsToReusePostgres extends AbstractJobMigra
                         if (ComponentUtilities.getNodeProperty(node, "FILETYPE") == null) {
                             ComponentUtilities.addNodeProperty(node, "FILETYPE", "CLOSED_LIST");
                             String filename = ComponentUtilities.getNodePropertyValue(node, "FILENAME");
-                            if (filename.endsWith(".txt\"")) {
-                                ComponentUtilities.getNodeProperty(node, "FILETYPE").setValue("TXTFILE");
-                            } else {
-                                ComponentUtilities.getNodeProperty(node, "FILETYPE").setValue("CSVFILE");
-                            }
+                            ComponentUtilities.getNodeProperty(node, "FILETYPE").setValue("TXTFILE");
                         }
                     }
 

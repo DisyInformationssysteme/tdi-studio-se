@@ -13,3 +13,4 @@ Export-Package: com.steadystate.css.parser,
  org.w3c.css.sac.helpers
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.libraries.css

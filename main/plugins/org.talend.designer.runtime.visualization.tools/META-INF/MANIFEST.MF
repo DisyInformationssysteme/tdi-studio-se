@@ -14,3 +14,4 @@ Export-Package: org.talend.designer.runtime.visualization.internal.tools,
  org.talend.designer.runtime.visualization.tools
 Bundle-Vendor: %pluginName
 Eclipse-BuddyPolicy: app
+Automatic-Module-Name: org.talend.designer.runtime.visualization.tools

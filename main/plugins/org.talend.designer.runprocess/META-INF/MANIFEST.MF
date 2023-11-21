@@ -73,3 +73,4 @@ Import-Package: org.slf4j,
  org.talend.designer.runtime.visualization.internal.ui.properties.memory,
  org.talend.designer.runtime.visualization.internal.ui.properties.timeline,
  org.talend.designer.runtime.visualization.views
+Automatic-Module-Name: org.talend.designer.runprocess

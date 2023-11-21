@@ -45,3 +45,4 @@ Export-Package: org.talend.designer.gefabstractmap,
  org.talend.designer.gefabstractmap.policy,
  org.talend.designer.gefabstractmap.resource,
  org.talend.designer.gefabstractmap.utils
+Automatic-Module-Name: org.talend.designer.gefabstractmap

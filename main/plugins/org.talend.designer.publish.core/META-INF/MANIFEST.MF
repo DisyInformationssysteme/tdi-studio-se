@@ -17,3 +17,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.utils,
  org.talend.commons.runtime
 Import-Package: org.talend.designer.maven.utils
+Automatic-Module-Name: org.talend.designer.publish.core

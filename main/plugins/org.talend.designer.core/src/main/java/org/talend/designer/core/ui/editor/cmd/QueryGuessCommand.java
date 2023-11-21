@@ -270,9 +270,10 @@ public class QueryGuessCommand extends Command {
         }
         if (dbType == null || dbType.equals("")) { //$NON-NLS-1$
             IElementParameter ptParam = node.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
-            if (ptParam != null && ptParam.getRepositoryValue() != null) {
-                if (ptParam.getRepositoryValue().endsWith(EDatabaseTypeName.GENERAL_JDBC.getProduct())
-                        || ptParam.getRepositoryValue().indexOf(ERepositoryObjectType.METADATA_TACOKIT_JDBC.getKey()) >= 0) {
+            String repositoryValue = null;
+            if (ptParam != null && (repositoryValue = ptParam.calcRepositoryValue()) != null) {
+                if (repositoryValue.endsWith(EDatabaseTypeName.GENERAL_JDBC.getProduct())
+                        || repositoryValue.indexOf(ERepositoryObjectType.METADATA_TACOKIT_JDBC.getKey()) >= 0) {
                     dbType = EDatabaseTypeName.GENERAL_JDBC.getDisplayName();
                 }
             }
@@ -452,9 +453,10 @@ public class QueryGuessCommand extends Command {
                 elementParameters = connectionNode.getElementParameters();
             }
             for (IElementParameter param : elementParameters) {
-                if (param.getRepositoryValue() != null) {
-                    if ((!isTeradata && param.getRepositoryValue().equals("SCHEMA")) //$NON-NLS-1$
-                            || (isTeradata && param.getRepositoryValue().equals("SID"))) {// check if dbtype is //$NON-NLS-1$
+                String repositoryValue = param.calcRepositoryValue();
+                if (repositoryValue != null) {
+                    if ((!isTeradata && repositoryValue.equals("SCHEMA")) //$NON-NLS-1$
+                            || (isTeradata && repositoryValue.equals("SID"))) {// check if dbtype is //$NON-NLS-1$
                         // Teradata, always keep the
                         // query style like
                         // "dbname.tablename.columnname" on build-in mode

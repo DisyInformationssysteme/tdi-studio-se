@@ -115,6 +115,7 @@ import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.service.IDesignerMapperService;
 import org.talend.core.service.IEBCDICProviderService;
 import org.talend.core.service.IMetadataManagmentService;
+import org.talend.core.service.ITCKUIService;
 import org.talend.core.service.ITaCoKitDependencyService;
 import org.talend.core.ui.ICDCProviderService;
 import org.talend.core.ui.IJobletProviderService;
@@ -915,7 +916,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         boolean sameValues = true;
                         for (IElementParameter param : getProcess().getElementParameters()) {
                             if (param.getCategory() == category) {
-                                String repositoryValue = param.getRepositoryValue();
+                                String repositoryValue = param.calcRepositoryValue();
                                 if (param.isShow(getProcess().getElementParameters()) && (repositoryValue != null)
                                         && !param.getName().equals(EParameterName.PROPERTY_TYPE.getName())) {
                                     Object repValue = RepositoryToComponentProperty.getValue(repositoryConnection,
@@ -995,7 +996,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
                         }
                         for (IElementParameter param : getProcess().getElementParameters()) {
-                            String repositoryValue = param.getRepositoryValue();
+                            String repositoryValue = param.calcRepositoryValue();
                             if (param.isShow(getProcess().getElementParameters()) && (repositoryValue != null)
                                     && (!param.getName().equals(EParameterName.PROPERTY_TYPE.getName()))
                                     && param.getCategory() == category) {
@@ -1369,13 +1370,13 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     }
                     boolean inputSame = true;
                     sapNodeParam = node.getElementParameter("MAPPING_INPUT"); //$NON-NLS-1$
-                    if (sapNodeParam != null && sapNodeParam.getRepositoryValue() != null && sapNodeParam.getValue() != null) {
+                    if (sapNodeParam != null && sapNodeParam.calcRepositoryValue() != null && sapNodeParam.getValue() != null) {
                         inputSame = SAPConnectionUtils.sameParamterTableWith(function,
                                 (List<Map<String, Object>>) sapNodeParam.getValue(), true);
                     }
                     boolean outputSame = true;
                     sapNodeParam = node.getElementParameter("MAPPING_OUTPUT"); //$NON-NLS-1$
-                    if (sapNodeParam != null && sapNodeParam.getRepositoryValue() != null && sapNodeParam.getValue() != null) {
+                    if (sapNodeParam != null && sapNodeParam.calcRepositoryValue() != null && sapNodeParam.getValue() != null) {
                         outputSame = SAPConnectionUtils.sameParamterTableWith(function,
                                 (List<Map<String, Object>>) sapNodeParam.getValue(), false);
                     }
@@ -2001,7 +2002,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                             if (needBuildIn) {
                                 break;
                             }
-                            if (param.getRepositoryValue() == null || param.getRepositoryProperty() != null
+                            if (param.calcRepositoryValue() == null || param.getRepositoryProperty() != null
                                     && !param.getRepositoryProperty().equals(curPropertyParam.getName())) {
                                 continue;
                             }
@@ -2082,7 +2083,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                 Object value = param.getValue();
                                 if (objectValue != null) {
                                     if ((param.getFieldType().equals(EParameterFieldType.CLOSED_LIST)
-                                            && UpdatesConstants.TYPE.equals(param.getRepositoryValue()))) {
+                                            && UpdatesConstants.TYPE.equals(param.calcRepositoryValue()))) {
                                         boolean found = false;
                                         String[] list = param.getListRepositoryItems();
                                         for (int i = 0; (i < list.length) && (!found); i++) {
@@ -2435,15 +2436,15 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
                         }
                         for (IElementParameter param : node.getElementParameters()) {
-                            String repositoryValue = param.getRepositoryValue();
+                            String repositoryValue = param.calcRepositoryValue();
                             if (param.getRepositoryProperty() != null
                                     && !param.getRepositoryProperty().equals(curPropertyParam.getName())) {
                                 continue;
                             }
                             if (repositoryValue != null && (!param.getName().equals(EParameterName.PROPERTY_TYPE.getName()))
                                     && param.getFieldType() != EParameterFieldType.MEMO_SQL
-                                    && !("tMDMReceive".equals(node.getComponent().getName()) && "XPATH_PREFIX".equals(param //$NON-NLS-1$ //$NON-NLS-2$
-                                            .getRepositoryValue()))
+                                    && !("tMDMReceive".equals(node.getComponent().getName()) && "XPATH_PREFIX".equals( //$NON-NLS-1$ //$NON-NLS-2$
+                                            repositoryValue))
                                     && !("tSAPOutput".equals(node.getComponent().getName())
                                             && param.getName().equals(UpdatesConstants.MAPPING))
                                     && !("tFileInputEBCDIC".equals(node.getComponent().getName())
@@ -2535,11 +2536,27 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
     
     public static boolean isIgnoreJDBCRepositoryParameter(final Node node, String repositoryValue) {
-        if (node.getComponent().getName() != null && node.getComponent().getName().contains("JDBC")
+        if ("JDBC".equals(ITCKUIService.get().getComponentFamilyName(node.getComponent()))
                 && ((TacokitDatabaseConnection.KEY_USE_AUTO_COMMIT.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASTORE_USE_AUTO_COMMIT.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SP_DATASTORE_USE_AUTO_COMMIT.equals(repositoryValue)
                         || TacokitDatabaseConnection.KEY_AUTO_COMMIT.equals(repositoryValue)
-                        || TacokitDatabaseConnection.KEY_DATASET_TABLE_NAME.equals(repositoryValue)
-                        || TacokitDatabaseConnection.KEY_DATASET_SQL_QUERY.equals(repositoryValue)))) {
+                        || TacokitDatabaseConnection.KEY_DATASTORE_AUTO_COMMIT.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SP_DATASTORE_AUTO_COMMIT.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_USE_DATASOURCE.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASTORE_USE_DATASOURCE.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SP_DATASTORE_USE_DATASOURCE.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASOURCE_ALIAS.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASTORE_DATASOURCE_ALIAS.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SP_DATASTORE_DATASOURCE_ALIAS.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_USE_SHARED_DB_CONNECTION.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASTORE_USE_SHARED_DB_CONNECTION.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SP_DATASTORE_USE_SHARED_DB_CONNECTION.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SHARED_DB_CONNECTION.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASTORE_SHARED_DB_CONNECTION.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_SP_DATASTORE_SHARED_DB_CONNECTION.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASET_SQL_QUERY.equals(repositoryValue)
+                        || TacokitDatabaseConnection.KEY_DATASET_TABLE_NAME.equals(repositoryValue)))) {
             return true;
         }
         return false;
@@ -2571,7 +2588,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     private String getReposiotryValueForOldJDBC(Node node, Connection repositoryConnection, IElementParameter param) {
-        String repositoryValue = param.getRepositoryValue();
+        String repositoryValue = param.calcRepositoryValue();
         // for JDBC component of mr process
         if (isOldJDBC(node, repositoryConnection)) {
 

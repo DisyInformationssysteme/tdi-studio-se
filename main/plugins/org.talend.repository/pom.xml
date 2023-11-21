@@ -31,7 +31,8 @@
                         </goals>
                         <configuration>
                             <excludeTypes>pom</excludeTypes>
-                            <includeScope>runtime</includeScope>
+						    <excludeGroupIds>org.talend.studio</excludeGroupIds>
+			                <includeScope>runtime</includeScope>
                             <excludeTransitive>true</excludeTransitive>
                             <outputDirectory>${basedir}/lib</outputDirectory>
                         </configuration>
@@ -41,6 +42,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
+                <version>3.3.1</version>
                 <configuration>
                     <filesets>
                         <fileset>

@@ -20,3 +20,4 @@ Require-Bundle: org.eclipse.ui,
  org.talend.commons.runtime
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/delegates/*.xml,OSGI-INF/*.xml
+Automatic-Module-Name: org.talend.designer.unifiedcomponent

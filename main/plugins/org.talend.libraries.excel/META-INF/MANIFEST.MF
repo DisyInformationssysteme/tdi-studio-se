@@ -227,3 +227,4 @@ Require-Bundle: org.talend.libraries.dom4j-jaxen,
  org.talend.libraries.apache.xml
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
+Automatic-Module-Name: org.talend.libraries.excel

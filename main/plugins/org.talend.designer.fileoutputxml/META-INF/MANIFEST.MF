@@ -26,3 +26,4 @@ Require-Bundle: org.eclipse.ui.workbench,
  org.talend.commons.runtime,
  org.talend.common.ui.runtime
 Eclipse-LazyStart: true
+Automatic-Module-Name: org.talend.designer.fileoutputxml

@@ -77,7 +77,6 @@
 		<module>main/plugins/org.talend.libraries.ftp</module>
 		<module>main/plugins/org.talend.libraries.bigquery</module>
 		<module>main/plugins/org.talend.libraries.groovy</module>
-		<module>main/plugins/org.talend.libraries.guava</module>
 		<module>main/plugins/org.talend.libraries.jax</module>
 		<module>main/plugins/org.talend.libraries.microsoft</module>
 		<module>main/plugins/org.talend.libraries.mondrian</module>
