@@ -358,7 +358,7 @@ public class WebSocketClient implements AutoCloseable {
         }
         
         public byte[] searchIcon(final String familyId, final String iconKey) {
-            return root.sendAndWait("/v1/get/component/searchIcon/", "/component/searchIcon/" + familyId + "/" + iconKey, null, byte[].class, true);
+            return root.sendAndWait("/v1/get/component/icon/custom/", "/component/icon/custom/" + familyId + "/" + iconKey, null, byte[].class, true);
         }
 
         public ComponentDetailList getDetail(final String language, final String[] identifiers) {

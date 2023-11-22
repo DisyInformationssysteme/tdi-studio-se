@@ -341,8 +341,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     protected String getValueFromRepositoryName(String repositoryName) {
         for (IElementParameter param : (List<IElementParameter>) elem.getElementParameters()) {
-            if (param.getRepositoryValue() != null) {
-                if (param.getRepositoryValue().equals(repositoryName)) {
+            String repositoryValue = param.calcRepositoryValue();
+            if (repositoryValue != null) {
+                if (repositoryValue.equals(repositoryName)) {
                     if (param.getFieldType().equals(EParameterFieldType.CLOSED_LIST)) {
                         return getRepositoryItemFromRepositoryName(param, repositoryName);
                     }
@@ -392,12 +393,13 @@ public abstract class AbstractElementPropertySectionController implements Proper
             // if ("TYPE".equals(repositoryName) && "CONNECTION_TYPE".equals(param.getName())) {
             // return (String) param.getValue();
             // }
-            if (param.getRepositoryValue() != null) {
+            String repositoryValue = param.calcRepositoryValue();
+            if (repositoryValue != null) {
                 if (param.getRepositoryProperty() != null && baseRepositoryParameter != null
                         && !param.getRepositoryProperty().equals(baseRepositoryParameter.getName())) {
                     continue;
                 }
-                if (param.getRepositoryValue().equals(repositoryName)) {
+                if (repositoryValue.equals(repositoryName)) {
                     if (param.getFieldType().equals(EParameterFieldType.CLOSED_LIST)) {
                         return getRepositoryItemFromRepositoryName(param, repositoryName);
                     }
@@ -450,8 +452,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
             if (!sameExtraParameter(param)) {
                 continue;
             }
-            if (param.getRepositoryValue() != null) {
-                if (param.getRepositoryValue().equals(repositoryName)) {
+            String repositoryValue = param.calcRepositoryValue();
+            if (repositoryValue != null) {
+                if (repositoryValue.equals(repositoryName)) {
                     if (param.getName().contains(parameterName)) {
                         if (param.getValue() instanceof String) {
                             return (String) param.getValue();
@@ -496,13 +499,14 @@ public abstract class AbstractElementPropertySectionController implements Proper
             if (!sameExtraParameter(param)) {
                 continue;
             }
-            if (param.getRepositoryValue() != null) {
+            String repositoryValue = param.calcRepositoryValue();
+            if (repositoryValue != null) {
                 if (param.getRepositoryProperty() != null && basePropertyParameter != null
                         && !param.getRepositoryProperty().equals(basePropertyParameter.getName())) {
                     // in case the parameter name is not linked to the current property tested (cf like tSqoopImport)
                     continue;
                 }
-                if (param.getRepositoryValue().equals(repositoryName)) {
+                if (repositoryValue.equals(repositoryName)) {
                     return param.getName();
                 }
             }
@@ -1425,7 +1429,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
         IElementParameter basePropertyParameter = null;
         for (IElementParameter param : elem.getElementParameters()) {
             if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
-                if (param.getRepositoryValue().startsWith("DATABASE")) {
+                if (param.calcRepositoryValue().startsWith("DATABASE")) {
                     basePropertyParameter = param;
                     break;
                 }
@@ -1731,7 +1735,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
         IElementParameter basePropertyParameter = null;
         for (IElementParameter param : elem.getElementParameters()) {
             if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
-                if (param.getRepositoryValue().startsWith("DATABASE")) {
+                if (param.calcRepositoryValue().startsWith("DATABASE")) {
                     basePropertyParameter = param;
                     break;
                 }
@@ -2261,7 +2265,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
         IElementParameter basePropertyParameter = null;
         for (IElementParameter param : elem.getElementParameters()) {
             if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
-                if (param.getRepositoryValue().startsWith("DATABASE")) {
+                if (param.calcRepositoryValue().startsWith("DATABASE")) {
                     basePropertyParameter = param;
                     break;
                 }
@@ -2591,7 +2595,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             IElementParameter repositoryParam = null;
             for (IElementParameter param : elem.getElementParameters()) {
                 if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE
-                        && param.getRepositoryValue().startsWith("DATABASE")) {
+                        && param.calcRepositoryValue().startsWith("DATABASE")) {
                     if (memoParam != null && param.getCategory().equals(memoParam.getCategory())) {
                         repositoryParam = param;
                         break;

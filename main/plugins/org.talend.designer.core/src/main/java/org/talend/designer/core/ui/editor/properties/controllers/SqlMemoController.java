@@ -140,7 +140,7 @@ public class SqlMemoController extends AbstractElementPropertySectionController 
         IElementParameter basePropertyParameter = null;
         for (IElementParameter param : elem.getElementParameters()) {
             if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
-                if (param.getRepositoryValue().startsWith("DATABASE")) {
+                if (param.calcRepositoryValue().startsWith("DATABASE")) {
                     basePropertyParameter = param;
                     break;
                 }

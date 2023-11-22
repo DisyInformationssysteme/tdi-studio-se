@@ -25,6 +25,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -34,6 +35,7 @@ import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.service.ITCKUIService;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.TaCoKitCache;
 import org.talend.sdk.component.studio.metadata.action.CreateTaCoKitConfigurationAction;
@@ -148,6 +150,15 @@ public class TCKUIService implements ITCKUIService {
         TaCoKitConfigurationItemModel itemModule = new TaCoKitConfigurationItemModel(item);
         TaCoKitConfigurationModel module = new TaCoKitConfigurationModel(item.getConnection());
         return TaCoKitMetadataContentProvider.createLeafRepositoryNode(parent, null, itemModule, module.getConfigTypeNode(), repositoryObject);
+    }
+    
+    @Override
+    public String getComponentFamilyName(IComponent component) {
+        if (component instanceof ComponentModel) {
+            ComponentModel componentModel = (ComponentModel)component;
+            return componentModel.getIndex().getFamilyDisplayName();
+        }
+        return null;
     }
 
 }

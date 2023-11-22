@@ -687,7 +687,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         if (propertyParam == null) {
             return;
         }
-        String repositoryValue = propertyParam.getRepositoryValue();
+        String repositoryValue = propertyParam.calcRepositoryValue();
         if (repositoryValue == null) {
             return;
         }

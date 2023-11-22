@@ -798,7 +798,8 @@ public class ChangeMetadataCommand extends Command {
             String componentName = node.getComponent().getName();
             for (IElementParameter parameter : node.getElementParameters()) {
                 if (parameter.getFieldType() == EParameterFieldType.TABLE) {
-                    if (parameter.getRepositoryValue() != null && parameter.getRepositoryValue().equals("XML_MAPPING")) { //$NON-NLS-1$
+                    String repositoryValue = parameter.calcRepositoryValue();
+                    if (repositoryValue != null && repositoryValue.equals("XML_MAPPING")) { //$NON-NLS-1$
                         List<Map<String, Object>> value2 = (List<Map<String, Object>>) parameter.getValue();
                         RepositoryToComponentProperty.getTableXMLMappingValue(getConnection(), value2, newOutputMetadata,
                                 getColumnRenameMap());

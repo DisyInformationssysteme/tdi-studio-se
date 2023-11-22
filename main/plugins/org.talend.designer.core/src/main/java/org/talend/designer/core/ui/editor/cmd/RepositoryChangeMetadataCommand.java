@@ -246,7 +246,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                         .equals(param.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName()).getValue())) {
                     IElementParameter module = node.getElementParameter("module.moduleName");
                     if (module != null) {
-                        String repositoryValue = module.getRepositoryValue();
+                        String repositoryValue = module.calcRepositoryValue();
                         if (repositoryValue == null) {
                             List<ComponentProperties> componentProperties = null;
                             IGenericWizardService wizardService = null;
@@ -286,7 +286,8 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                 if (item instanceof ConnectionItem) {
                     List<? extends IElementParameter> elementParameters = new ArrayList(node.getElementParameters());
                     for (IElementParameter param : elementParameters) {
-                        if (param.getRepositoryValue() != null && !param.getRepositoryValue().equals("")) {//$NON-NLS-1$
+                        String repositoryValue = param.calcRepositoryValue();
+                        if (repositoryValue != null && !repositoryValue.equals("")) {//$NON-NLS-1$
                             /*
                              * Dead code. SalesforceSchemaConnectionItem is not used anymore. GenericConnectionItemImpl is an instance for item.
                              * "MODULENAME" is replaced with "module.moduleName".
@@ -297,12 +298,13 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                                         .getConnection();
                                 isCustomSfConn = sfConn.isUseCustomModuleName();
                             }
-                            if (param.getRepositoryValue().equals("TYPE") //$NON-NLS-1$
-                                    || (param.getRepositoryValue().equals("MODULENAME") && item instanceof SalesforceSchemaConnectionItem && !isCustomSfConn)) { //$NON-NLS-1$
+                            if (repositoryValue.equals("TYPE") //$NON-NLS-1$
+                                    || (repositoryValue.equals("MODULENAME") && item instanceof SalesforceSchemaConnectionItem //$NON-NLS-1$
+                                            && !isCustomSfConn)) {
                                 continue;
                             }
                             if (param.getFieldType().equals(EParameterFieldType.TABLE)
-                                    && param.getRepositoryValue().equals("XML_MAPPING")) { //$NON-NLS-1$
+                                    && repositoryValue.equals("XML_MAPPING")) { //$NON-NLS-1$
                                 List<Map<String, Object>> table = (List<Map<String, Object>>) node.getPropertyValue(param
                                         .getName());
                                 IMetadataTable metaTable = node.getMetadataList().get(0);
@@ -316,11 +318,12 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                                                 .equals(componentName))
                                         && connection instanceof XmlFileConnection
                                         && XmlUtil.isXSDFile(TalendQuoteUtils.removeQuotes(((XmlFileConnection) connection)
-                                                .getXmlFilePath())) && param.getRepositoryValue().equals("FILE_PATH")) {
+                                                .getXmlFilePath()))
+                                        && repositoryValue.equals("FILE_PATH")) {
                                     // do nothing
                                 } else {
                                     Object value = RepositoryToComponentProperty.getValue(
-                                            ((ConnectionItem) item).getConnection(), param.getRepositoryValue(),
+                                            ((ConnectionItem) item).getConnection(), repositoryValue,
                                             newOutputMetadata, componentName, null);
                                     if (value != null) {
                                         value = getParamValueForOldJDBC(param, value);
