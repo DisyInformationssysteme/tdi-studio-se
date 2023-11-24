@@ -72,6 +72,7 @@ public class TaCoKitEditWizard extends TaCoKitConfigurationWizard {
         if (connectionItem.getConnection() instanceof TacokitDatabaseConnection) {
             connectionItem.getConnection().setName(getWizardPropertiesPage().getNameText().getText());
         }
+        updateDQDependency(getWizardPropertiesPage().isNameModifiedByUser());
         updateConnectionItem();
         refreshInFinish(getWizardPropertiesPage().isNameModifiedByUser());
         TaCoKitUpdateManager.updateTaCoKitSubConnection(getRuntimeData());
