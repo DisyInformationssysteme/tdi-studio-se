@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorColumnNotModifiable;
 import org.talend.commons.ui.swt.advanced.dataeditor.control.ExtendedPushButton;
-import org.talend.commons.ui.swt.dnd.DNDTableViewerHelper;
 import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn;
@@ -133,7 +132,6 @@ public class TableController extends AbstractTableController {
         ExtendedTableModel<Map<String, Object>> extendedTableModel = tableEditorView.getExtendedTableModel();
         if (extendedTableModel != null) {
             TableViewer tableViewer = extendedTableModel.getTableViewer();
-            DNDTableViewerHelper.addDndSupport(tableViewer);//Dnd support
             if (tableViewer != null) {
                 CellEditor[] cellEditors = tableViewer.getCellEditors();
                 if (cellEditors != null && cellEditors.length > 0) {
