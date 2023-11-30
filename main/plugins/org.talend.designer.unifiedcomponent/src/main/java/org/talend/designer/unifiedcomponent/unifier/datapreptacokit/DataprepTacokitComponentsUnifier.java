@@ -16,7 +16,7 @@ import org.talend.designer.unifiedcomponent.unifier.AbstractComponentsUnifier;
 
 
 public class DataprepTacokitComponentsUnifier extends AbstractComponentsUnifier {
-    private String displayName = "On-Cloud";
+    private String displayName = "Cloud";
     /*
      * (non-Javadoc)
      *

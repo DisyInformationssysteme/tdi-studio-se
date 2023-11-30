@@ -26,7 +26,5 @@ public class DataprepComponentsUnifier extends AbstractComponentsUnifier {
     @Override
     public String getDisplayName() {
         return displayName;
-    }
-    
-    
+    }   
 }
