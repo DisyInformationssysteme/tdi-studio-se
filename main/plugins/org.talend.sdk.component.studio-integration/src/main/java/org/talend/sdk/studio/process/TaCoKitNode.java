@@ -126,16 +126,15 @@ public final class TaCoKitNode {
         List list = tableElementParam.getElementValue();
         if (list != null) {
             int index = 0;
-            Set<String> keySet = new HashSet<String>();
+            String firstColumnKey = null;
             for (int i = 0; i < list.size(); i++) {
                 Object value = list.get(i);
                 if (value instanceof ElementValueType) {
                     ElementValueType eValue = (ElementValueType) value;
-                    if (keySet.contains(eValue.getElementRef())) {
-                        keySet.clear();
+                    if (firstColumnKey == null) {
+                        firstColumnKey = eValue.getElementRef();
+                    } else if (firstColumnKey.equals(eValue.getElementRef())){
                         index++;
-                    } else {
-                        keySet.add(eValue.getElementRef());
                     }
                     String paramName = getTableParamName(index, eValue);
                     if (paramName != null) {
@@ -197,30 +196,19 @@ public final class TaCoKitNode {
             if (param.getName().equals(paramName)) {
                 sameNameParam = param;
                 List list = param.getElementValue();
-                Set<String> keySet = new HashSet<String>();
-                int index = 0, i = 0;
-                for (; i < list.size(); ) {
-                    ElementValueType eValue = (ElementValueType) list.get(i);
-                    if (paramIndex == index) {
-                        break;
-                    } else if (keySet.contains(eValue.getElementRef())) {
-                        index++;
-                        keySet.clear();
-                    } else {
-                        keySet.add(eValue.getElementRef());
-                        i++;
-                    }
-                }
-                for (; i < list.size(); i++) {
+                int index = 0;
+                for (int i = 0; i < list.size(); i++) {
                     ElementValueType eValue = (ElementValueType) list.get(i);
                     if (elemRef.equals(eValue.getElementRef())) {
-                        eValue.setValue(paramValue);
-                        return;
-                    } else {
-                        continue;
+                        if (paramIndex == index) {
+                            eValue.setValue(paramValue);
+                            return;
+                        } else {
+                            index ++;
+                        }
                     }
                 }
-            }
+            }              
         }
         if (sameNameParam == null) {
             sameNameParam = TalendFileFactoryImpl.eINSTANCE.createElementParameterType();
